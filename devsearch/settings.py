@@ -41,11 +41,12 @@ INSTALLED_APPS = [
 
     # Our Apps
     "projects.apps.ProjectsConfig",
+    "users.apps.UsersConfig",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
+    # So we can use the static files in production
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
