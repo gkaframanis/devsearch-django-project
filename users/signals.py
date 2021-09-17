@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 def create_profile(sender, instance, created, **kwargs):
     if created:
         user = instance
-        profile = Profile.objects.create(user=user, username=user.username, email=user.email, name=user.first_name)
+        profile = Profile.objects.create(user=user, username=user.username, email=user.email, name=f"{user.first_name} {user.last_name}")
 
 
 # @receiver(post_delete, sender=Profile)
