@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import Profile
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, EditProfileForm
 
 
 # https://docs.djangoproject.com/en/3.2/topics/auth/default/
@@ -64,7 +64,7 @@ def register_user(request):
             messages.success(request, "User account was created!")
             # It's a good practice to log the user immediately after registration.
             login(request, user)
-            return redirect("profiles")
+            return redirect("edit-account")
 
         else:
             messages.error(request, "An error has occurred during registration...")
@@ -87,3 +87,32 @@ def user_profile(request, pk):
 
     context = {"profile": profile, "top_skills": top_skills, "other_skills": other_skills}
     return render(request, "users/user-profile.html", context)
+
+
+@login_required(login_url="login")
+def user_account(request):
+    profile = request.user.profile
+
+    skills = profile.skill_set.all()
+    projects = profile.project_set.all()
+
+    context = {"profile": profile, "skills": skills, "projects": projects}
+    return render(request, "users/account.html", context)
+
+
+@login_required(login_url="login")
+def edit_account(request):
+    profile = request.user.profile
+    # We want to prefill the form with the user information.
+    form = EditProfileForm(instance=profile)
+
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+
+            return redirect("account")
+
+    context = {"form": form}
+
+    return render(request, "users/profile_form.html", context)
